@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, NavLink } from "react-router-dom";
-import userservice from "../services/userService";
+import UserService from "../services/loginService";
 import styles from "./css/Register.module.css";
 
 const Register = () => {
@@ -42,7 +42,7 @@ const Register = () => {
   const registerUser = async (e) => {
     e.preventDefault();
     try {
-      await userservice.registerUser(user);
+      await UserService.registerUser(user);
       sessionStorage.setItem("username", user.username);
       sessionStorage.setItem("gender", user.gender);
       navigate("/registersuccess");
@@ -54,7 +54,7 @@ const Register = () => {
   const registerProfessor = async (e) => {
     e.preventDefault();
     try {
-      await userservice.registerProfessor(professor);
+      await UserService.registerProfessor(professor);
       sessionStorage.setItem("professorname", professor.professorname);
       sessionStorage.setItem("gender", professor.gender);
       navigate("/registersuccess");

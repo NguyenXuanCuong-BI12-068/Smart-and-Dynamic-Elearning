@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,6 +38,10 @@ public class ProfessorController {
 	
 	@Autowired
 	private WishListService wishlistService;
+
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+	
 	
 	@GetMapping("/professorlist")
 	public ResponseEntity<List<Professor>> getProfessorList() throws Exception
@@ -77,10 +82,21 @@ public class ProfessorController {
 	}
 	
 	@PostMapping("/addProfessor")
-	public Professor addNewProfessor(@RequestBody Professor professor) throws Exception
-	{
+	public Professor addNewProfessor(@RequestBody Professor professor) throws Exception {
+		String currEmail = professor.getEmail();
 		String newID = getNewID();
 		professor.setProfessorid(newID);
+
+		// Encode the password
+		professor.setPassword(passwordEncoder.encode(professor.getPassword()));
+
+		if(currEmail != null && !currEmail.isEmpty()) {
+			Professor existingProfessor = professorService.fetchProfessorByEmail(currEmail);
+			if(existingProfessor != null) {
+				throw new Exception("Professor with " + currEmail + " already exists !!!");
+			}
+		}
+
 		Professor professorObj = professorService.addNewProfessor(professor);
 		professorService.updateStatus(professor.getEmail());
 		return professorObj;

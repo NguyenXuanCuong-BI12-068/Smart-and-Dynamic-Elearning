@@ -1,6 +1,7 @@
 package com.example.backend.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,37 +21,40 @@ public class RegistrationController {
 	
 	@Autowired
 	private ProfessorService professorService;
+
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 	
 	@PostMapping("/registeruser")
-	public User registerUser(@RequestBody User user) throws Exception
-	{
+	public User registerUser(@RequestBody User user) throws Exception {
 		String currEmail = user.getEmail();
 		String newID = getNewID();
 		user.setUserid(newID);
 		
-		if(currEmail != null && !currEmail.isEmpty())
-		{
+		// Encode the password
+		user.setPassword(passwordEncoder.encode(user.getPassword()));
+		
+		if(currEmail != null && !currEmail.isEmpty()) {
 			User existingUser = userService.fetchUserByEmail(currEmail);
-			if(existingUser != null)
-			{
+			if(existingUser != null) {
 				throw new Exception("User with "+currEmail+" already exists !!!");
 			}
 		}
 		return userService.saveUser(user);
 	}
-	
+
 	@PostMapping("/registerprofessor")
-	public Professor registerDoctor(@RequestBody Professor professor) throws Exception
-	{
+	public Professor registerDoctor(@RequestBody Professor professor) throws Exception {
 		String currEmail = professor.getEmail();
 		String newID = getNewID();
 		professor.setProfessorid(newID);
 		
-		if(currEmail != null && !currEmail.isEmpty())
-		{
+		// Encode the password
+		professor.setPassword(passwordEncoder.encode(professor.getPassword()));
+		
+		if(currEmail != null && !currEmail.isEmpty()) {
 			Professor existingProfessor = professorService.fetchProfessorByEmail(currEmail);
-			if(existingProfessor != null)
-			{
+			if(existingProfessor != null) {
 				throw new Exception("Professor with "+currEmail+" already exists !!!");
 			}
 		}
