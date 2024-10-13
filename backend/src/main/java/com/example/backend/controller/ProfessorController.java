@@ -193,17 +193,30 @@ public class ProfessorController {
 		return new ResponseEntity<>(wishlistCount, HttpStatus.OK);
 	}
   
-	@GetMapping("/getcoursenames")
-    public ResponseEntity<List<String>> getCourseNames() throws Exception {
-        // Fetch courses of type 'YouTube'
-        List<Course> courses = courseService.getCoursesByTypeName("YouTube");
-        List<String> coursenames = new ArrayList<>();
-        for(Course obj : courses) {
-            coursenames.add(obj.getCoursename());
-        }
-        return new ResponseEntity<>(coursenames, HttpStatus.OK);
-    }
-	
+	@GetMapping("/getcoursenames/{email}")
+	public ResponseEntity<List<String>> getCourseNames(@PathVariable String email) throws Exception {
+		// Fetch professor by email
+		Professor professor = professorService.fetchProfessorByEmail(email);
+		if (professor == null) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+
+		// Fetch courses of type 'YouTube' for the specific professor
+		List<Course> courses = courseService.getCoursesByTypeNameAndInstructor("YouTube", professor.getProfessorname());
+		List<String> coursenames = new ArrayList<>();
+		for(Course obj : courses) {
+			coursenames.add(obj.getCoursename());
+		}
+		return new ResponseEntity<>(coursenames, HttpStatus.OK);
+	}
+
+	@GetMapping("/courses/uploaded-today")
+	public ResponseEntity<List<Course>> getCoursesUploadedToday() {
+		List<Course> todayCourses = courseService.getCoursesUploadedToday();
+		return new ResponseEntity<>(todayCourses, HttpStatus.OK);
+	}
+
+
 	
 	public String getNewID()
 	{

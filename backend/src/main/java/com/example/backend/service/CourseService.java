@@ -1,5 +1,6 @@
 package com.example.backend.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,7 +84,14 @@ public class CourseService {
 		return (List<Course>)courseRepo.findByLanguage(language);
 	}
 
-	public List<Course> getCoursesByTypeName(String coursetype) {
-        return courseRepo.findByCoursetype(coursetype);
-    }
+	public List<Course> getCoursesByTypeNameAndInstructor(String coursetype, String instructorname) {
+		return courseRepo.findByCoursetypeAndInstructorname(coursetype, instructorname);
+	}
+
+	public List<Course> getCoursesUploadedToday() {
+		String today = LocalDate.now().toString();
+		return courseRepo.findByEnrolleddateEquals(today);
+	}
+
+	
 }
