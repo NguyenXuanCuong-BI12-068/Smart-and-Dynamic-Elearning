@@ -193,9 +193,18 @@ class professorservice {
     };
     
     // Fetch course names
-    static getCourseNames = async () => {
+    static getCourseNames = async (email) => {
         try {
-            const response = await api.get("/getcoursenames");
+            const response = await api.get(`/getcoursenames/${email}`);
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            return [];
+        }
+    };
+    static getCoursesUploadedToday = async () => {
+        try {
+            const response = await api.get("/courses/uploaded-today");
             return response.data;
         } catch (error) {
             console.error(error);

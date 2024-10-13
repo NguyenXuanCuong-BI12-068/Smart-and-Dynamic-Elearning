@@ -461,7 +461,7 @@ const Courselist = () => {
           padding: '10px',
           borderRadius: '5px',
           position: 'fixed',
-          top: '10px',
+          top: '100px',
           right: '10px',
           zIndex: 1000,
         }}
@@ -478,7 +478,7 @@ const Courselist = () => {
             padding: '10px',
             borderRadius: '5px',
             position: 'fixed',
-            top: '10px',
+            top: '100px',
             right: '10px',
             zIndex: 1000,
           }}

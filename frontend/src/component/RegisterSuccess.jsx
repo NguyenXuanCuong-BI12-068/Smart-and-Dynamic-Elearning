@@ -17,12 +17,6 @@ const RegisterSuccess = () => {
     return (
         <div className={styles.container}>
             <div className={styles.card}>
-                <img 
-                    src="assets/img/success.gif" 
-                    alt="Success" 
-                    width="200" 
-                    height="200" 
-                />
                 <h1>Registered Successfully !!!</h1>
                 <h3>You will be redirected to the Login page in a few seconds</h3>
             </div>
