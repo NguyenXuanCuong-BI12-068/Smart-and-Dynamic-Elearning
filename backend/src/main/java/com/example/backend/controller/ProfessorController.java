@@ -1,7 +1,9 @@
 package com.example.backend.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,10 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backend.model.Chapter;
 import com.example.backend.model.Course;
+import com.example.backend.model.Enrollment;
 import com.example.backend.model.Professor;
 import com.example.backend.model.Wishlist;
 import com.example.backend.service.ChapterService;
 import com.example.backend.service.CourseService;
+import com.example.backend.service.EnrollmentService;
 import com.example.backend.service.ProfessorService;
 import com.example.backend.service.WishListService;
 
@@ -41,6 +45,9 @@ public class ProfessorController {
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+
+	@Autowired
+	private EnrollmentService enrollmentService;
 	
 	
 	@GetMapping("/professorlist")
@@ -110,6 +117,74 @@ public class ProfessorController {
 		
 		return courseService.addNewCourse(course);
 	}
+	@GetMapping("/listCourse/{email}")
+	public ResponseEntity<List<Map<String, Object>>> listCoursesByProfessor(@PathVariable String email) {
+		Professor professor = professorService.fetchProfessorByEmail(email);
+		if (professor == null) {
+			return ResponseEntity.notFound().build();
+		}
+
+		List<Course> courses = courseService.getCoursesByInstructorName(professor.getProfessorname());
+		List<Map<String, Object>> result = new ArrayList<>();
+
+		for (Course course : courses) {
+			Map<String, Object> courseInfo = new HashMap<>();
+			courseInfo.put("course", course);
+			
+			List<Enrollment> enrollments = enrollmentService.getAllEnrollmentsByCoursename(course.getCoursename());
+			courseInfo.put("enrollments", enrollments);
+
+			result.add(courseInfo);
+		}
+
+		return ResponseEntity.ok(result);
+	}
+
+
+	@PutMapping("/editCourse/{email}/{coursename}")
+	public ResponseEntity<Course> editCourseByEmailAndCoursename(@PathVariable String email, @PathVariable String coursename, @RequestBody Course updatedCourse) {
+		Professor professor = professorService.fetchProfessorByEmail(email);
+		if (professor == null) {
+			return ResponseEntity.notFound().build();
+		}
+		
+		Course existingCourse = courseService.fetchCourseByCoursename(coursename);
+		if (existingCourse == null || !existingCourse.getInstructorname().equals(professor.getProfessorname())) {
+			return ResponseEntity.notFound().build();
+		}
+		
+		// Update course fields
+		if (updatedCourse.getCoursename() != null) existingCourse.setCoursename(updatedCourse.getCoursename());
+		if (updatedCourse.getCourseid() != null) existingCourse.setCourseid(updatedCourse.getCourseid());
+		if (updatedCourse.getEnrolleddate() != null) existingCourse.setEnrolleddate(updatedCourse.getEnrolleddate());
+		if (updatedCourse.getInstructorname() != null) existingCourse.setInstructorname(updatedCourse.getInstructorname());
+		if (updatedCourse.getInstructorinstitution() != null) existingCourse.setInstructorinstitution(updatedCourse.getInstructorinstitution());
+		if (updatedCourse.getEnrolledcount() != null) existingCourse.setEnrolledcount(updatedCourse.getEnrolledcount());
+		if (updatedCourse.getYoutubeurl() != null) existingCourse.setYoutubeurl(updatedCourse.getYoutubeurl());
+		if (updatedCourse.getWebsiteurl() != null) existingCourse.setWebsiteurl(updatedCourse.getWebsiteurl());
+		if (updatedCourse.getCoursetype() != null) existingCourse.setCoursetype(updatedCourse.getCoursetype());
+		if (updatedCourse.getSkilllevel() != null) existingCourse.setSkilllevel(updatedCourse.getSkilllevel());
+		if (updatedCourse.getLanguage() != null) existingCourse.setLanguage(updatedCourse.getLanguage());
+		if (updatedCourse.getDescription() != null) existingCourse.setDescription(updatedCourse.getDescription());
+		
+		Course editedCourse = courseService.saveCourse(existingCourse);
+		
+		// Update enrollment table
+		if (updatedCourse.getCoursename() != null || updatedCourse.getDescription() != null) {
+			enrollmentService.updateEnrollmentsByCourse(
+				coursename, 
+				updatedCourse.getCoursename(), 
+				updatedCourse.getDescription()
+			);
+		}
+		
+		return ResponseEntity.ok(editedCourse);
+	}
+
+
+
+
+
 	
 	@PostMapping("/addnewchapter")
     public Chapter addNewChapters(@RequestBody Chapter chapter) throws Exception {

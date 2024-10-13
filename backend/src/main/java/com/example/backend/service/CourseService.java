@@ -92,6 +92,14 @@ public class CourseService {
 		String today = LocalDate.now().toString();
 		return courseRepo.findByEnrolleddateEquals(today);
 	}
+	public List<Course> getCoursesByInstructorName(String instructorName) {
+		return courseRepo.findByInstructorname(instructorName);
+	}
+	
+	public Course updateCourse(Course course) {
+		return courseRepo.save(course);
+	}
+	
 
 	
 }
