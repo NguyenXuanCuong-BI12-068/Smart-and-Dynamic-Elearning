@@ -20,6 +20,7 @@ import UserList from './component/UserList';
 import FullCourse from './component/FullCourse';
 import Welcome from './component/WelcomePage/Welcome';
 import ProtectedRoute from './ProtectedRoute';
+import ManageProfessorCourses from './component/ManageProfessorCourses';
 
 function App() {
   return (
@@ -44,6 +45,7 @@ function App() {
         <Route path="/edituserprofile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
         <Route path="/professorlist" element={<ProtectedRoute><ProfessorList /></ProtectedRoute>} />
         <Route path="/userlist" element={<ProtectedRoute><UserList /></ProtectedRoute>} />
+        <Route path="/manageprofessorcourses" element={<ProtectedRoute><ManageProfessorCourses /></ProtectedRoute>} />
         <Route path="/fullcourse/:coursename" element={<ProtectedRoute><FullCourse /></ProtectedRoute>} />
       </Routes>
     </BrowserRouter>

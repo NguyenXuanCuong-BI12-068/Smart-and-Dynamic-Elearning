@@ -202,6 +202,24 @@ class professorservice {
             return [];
         }
     };
+    static listCoursesByProfessor = async (email) => {
+        try {
+            const response = await api.get(`/listCourse/${email}`);
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            return [];
+        }
+    };
+    static editCourse = async (email, course, updatedCourse) => {
+        try {
+            const response = await api.put(`/editCourse/${email}/${course}`, updatedCourse);
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            return [];
+        }
+    };
     static getCoursesUploadedToday = async () => {
         try {
             const response = await api.get("/courses/uploaded-today");
