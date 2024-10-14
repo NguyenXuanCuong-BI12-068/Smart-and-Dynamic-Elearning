@@ -211,15 +211,19 @@ class professorservice {
             return [];
         }
     };
-    static editCourse = async (email, course, updatedCourse) => {
+    static editCourse = async (email, coursename, updatedCourse) => {
         try {
-            const response = await api.put(`/editCourse/${email}/${course}`, updatedCourse);
-            return response.data;
+          const response = await api.put(`/editCourse/${email}/${coursename}`, 
+            updatedCourse,
+            { headers: { 'Content-Type': 'application/json' } }
+          );
+          return response.data;
         } catch (error) {
-            console.error(error);
-            return [];
+          console.error(error);
+          throw error;
         }
-    };
+      };
+      
     static getCoursesUploadedToday = async () => {
         try {
             const response = await api.get("/courses/uploaded-today");

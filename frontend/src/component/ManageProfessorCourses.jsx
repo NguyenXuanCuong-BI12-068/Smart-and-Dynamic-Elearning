@@ -53,6 +53,7 @@ const ManageProfessorCourses = () => {
       console.error('Error updating course:', error);
     }
   };
+  
 
   return (
     <>
