@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import com.example.backend.model.Enrollment;
 import com.example.backend.repository.EnrollmentRepository;
 
-import jakarta.transaction.Transactional;
 
 @Service
 public class EnrollmentService {
@@ -105,14 +104,14 @@ public class EnrollmentService {
 		return enrollmentRepo.findAllByCoursename(coursename);
 	}
 
-	@Transactional
-    public void updateEnrollmentsByCourse(String oldCourseName, String newCourseName, String newDescription) {
-        List<Enrollment> enrollments = enrollmentRepo.findAllByCoursename(oldCourseName);
-        for (Enrollment enrollment : enrollments) {
-            if (newCourseName != null) enrollment.setCoursename(newCourseName);
-            if (newDescription != null) enrollment.setDescription(newDescription);
-            enrollmentRepo.save(enrollment);
-        }
-    }
+	public void updateEnrollmentsByCourse(String oldCourseName, String newCourseName, String newDescription) {
+		List<Enrollment> enrollments = enrollmentRepo.findAllByCoursename(oldCourseName);
+		for (Enrollment enrollment : enrollments) {
+			enrollment.setCoursename(newCourseName);
+			enrollment.setDescription(newDescription);
+			enrollmentRepo.save(enrollment);
+		}
+	}
+	
 
 }

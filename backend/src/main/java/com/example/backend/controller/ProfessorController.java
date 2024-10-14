@@ -48,6 +48,8 @@ public class ProfessorController {
 
 	@Autowired
 	private EnrollmentService enrollmentService;
+
+
 	
 	
 	@GetMapping("/professorlist")
@@ -142,44 +144,40 @@ public class ProfessorController {
 
 
 	@PutMapping("/editCourse/{email}/{coursename}")
-	public ResponseEntity<Course> editCourseByEmailAndCoursename(@PathVariable String email, @PathVariable String coursename, @RequestBody Course updatedCourse) {
+	public ResponseEntity<Course> editCourseByEmailAndCoursename(
+		@PathVariable String email,
+		@PathVariable String coursename,
+		@RequestBody Course updatedCourse) {
+
 		Professor professor = professorService.fetchProfessorByEmail(email);
 		if (professor == null) {
 			return ResponseEntity.notFound().build();
 		}
-		
+
 		Course existingCourse = courseService.fetchCourseByCoursename(coursename);
 		if (existingCourse == null || !existingCourse.getInstructorname().equals(professor.getProfessorname())) {
 			return ResponseEntity.notFound().build();
 		}
-		
+
 		// Update course fields
 		if (updatedCourse.getCoursename() != null) existingCourse.setCoursename(updatedCourse.getCoursename());
-		if (updatedCourse.getCourseid() != null) existingCourse.setCourseid(updatedCourse.getCourseid());
-		if (updatedCourse.getEnrolleddate() != null) existingCourse.setEnrolleddate(updatedCourse.getEnrolleddate());
-		if (updatedCourse.getInstructorname() != null) existingCourse.setInstructorname(updatedCourse.getInstructorname());
-		if (updatedCourse.getInstructorinstitution() != null) existingCourse.setInstructorinstitution(updatedCourse.getInstructorinstitution());
-		if (updatedCourse.getEnrolledcount() != null) existingCourse.setEnrolledcount(updatedCourse.getEnrolledcount());
-		if (updatedCourse.getYoutubeurl() != null) existingCourse.setYoutubeurl(updatedCourse.getYoutubeurl());
-		if (updatedCourse.getWebsiteurl() != null) existingCourse.setWebsiteurl(updatedCourse.getWebsiteurl());
-		if (updatedCourse.getCoursetype() != null) existingCourse.setCoursetype(updatedCourse.getCoursetype());
-		if (updatedCourse.getSkilllevel() != null) existingCourse.setSkilllevel(updatedCourse.getSkilllevel());
-		if (updatedCourse.getLanguage() != null) existingCourse.setLanguage(updatedCourse.getLanguage());
 		if (updatedCourse.getDescription() != null) existingCourse.setDescription(updatedCourse.getDescription());
-		
+
+		// Save updated course
 		Course editedCourse = courseService.saveCourse(existingCourse);
-		
+
 		// Update enrollment table
-		if (updatedCourse.getCoursename() != null || updatedCourse.getDescription() != null) {
-			enrollmentService.updateEnrollmentsByCourse(
-				coursename, 
-				updatedCourse.getCoursename(), 
-				updatedCourse.getDescription()
-			);
-		}
+		enrollmentService.updateEnrollmentsByCourse(coursename, existingCourse.getCoursename(), existingCourse.getDescription());
+
+		// Update wishlist table
+		wishlistService.updateWishlistByCourse(coursename, existingCourse.getCoursename(), existingCourse.getDescription());
 		
+		chapterService.updateChaptersByCourse(coursename, existingCourse.getCoursename());
 		return ResponseEntity.ok(editedCourse);
 	}
+
+
+
 
 
 
